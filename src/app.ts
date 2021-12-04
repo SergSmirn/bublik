@@ -68,7 +68,7 @@ connect(DATABASE_URL).then((client) => {
 
     bot.use(privateChatMiddleware).command('takerecipient',async (ctx: SessionContext) => {
         const chatInfo = ctx.chat as PrivateChat;
-        const contextUser = await UserModel.findOne({id: chatInfo.id})
+        const contextUser = await UserModel.findOne({id: chatInfo.id});
 
         if (contextUser) {
             if (contextUser.recipientId) {
@@ -79,7 +79,7 @@ connect(DATABASE_URL).then((client) => {
             const noSantaRecipients = allRecipients.filter(({recipientId}) => !recipientId);
             const santaRecipients = allRecipients.filter(({recipientId}) => recipientId);
             const recipients = noSantaRecipients.length ? noSantaRecipients : santaRecipients;
-            const recipient: UserSchema | undefined = recipients[getRandomInRange(recipients.length - 1)]
+            const recipient: UserSchema | undefined = recipients[getRandomInRange(recipients.length - 1)];
 
             if (!recipient) {
                 return ctx.reply('Упс! Попробуй еще раз');
@@ -99,7 +99,7 @@ connect(DATABASE_URL).then((client) => {
     });
 
     bot.hears(/виолет/gi, ctx => {
-        ctx.replyWithPhoto({source: 'images/kiril.jpg'})
+        ctx.replyWithPhoto({source: 'images/kiril.jpg'});
     })
 
     bot.use(privateChatMiddleware).on('text', async (ctx: SessionContext) => {
@@ -113,7 +113,7 @@ connect(DATABASE_URL).then((client) => {
 
             if (currentUser && wishText) {
                 await currentUser.updateOne({wishList: wishText});
-                ctx.reply('Твои пожелания будут учтены, наверное...');
+                ctx.reply('Ну пинцет! Твои пожелания будут учтены, наверное...');
             } else {
                 ctx.reply('Что-то пошло не так :(');
             }
