@@ -21,10 +21,12 @@ enum Commands {
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/node-mongodb-server';
+const WITH_TLS = Boolean(process.env.WITH_TLS);
 const ADMIN_USERNAMES = ['SergSmirn'];
 const bot = new Telegraf<SessionContext>(BOT_TOKEN);
+const tlsCAFile = WITH_TLS ? `${__dirname}/root/dbaas_ca_cert.crt` : undefined;
 
-connect(DATABASE_URL).then((client) => {
+connect(DATABASE_URL, {tlsCAFile}).then((client) => {
     const db = client.connection.db;
     bot.use(session(db, { sessionName: 'session', collectionName: 'sessions' }));
 
@@ -42,13 +44,16 @@ connect(DATABASE_URL).then((client) => {
 
         await ctx.reply('Хай, брауни 🤙');
         await ctx.reply('Используй команду /getmembers, чтобы посмотреть всех участников игры');
-        await ctx.reply('Используй команду /setwishlist, чтобы указать свои предпочтения');
-        await ctx.reply('Используй команду /takerecipient, чтобы определить кому ты будешь дарить подарок. Но не спеши, подожди пока все подружки присоединятся к игре');
+
+        if (ctx?.chat?.type === 'private') {
+            await ctx.reply('Используй команду /setwishlist, чтобы указать свои предпочтения');
+            await ctx.reply('Используй команду /takerecipient, чтобы определить кому ты будешь дарить подарок. Но не спеши, подожди пока все подружки присоединятся к игре');
+        }
     });
 
     bot.command('getmembers',async (ctx: SessionContext) => {
         const users = await UserModel.find();
-        const text = 'Участники:\n' + users.map((user: UserSchema, index) => `${index + 1}. ${getUserDisplayName(user)}${user.recipientId ? ' 👍' : ''}`).join('\n');
+        const text = 'Участники:\n' + users.map((user: UserSchema, index) => `${index + 1}. ${getUserDisplayName(user)}${user.wishList ? ' 📃' : ''}${user.recipientId ? ' 🎅' : ''}`).join('\n');
         ctx.reply(text);
     });
 
@@ -63,7 +68,7 @@ connect(DATABASE_URL).then((client) => {
 
     bot.use(privateChatMiddleware).command('setwishlist',async (ctx: SessionContext) => {
         ctx.session.currentCommand = Commands.WishList;
-        ctx.reply('Напиши, что хочешь получить, а что нет');
+        ctx.reply('Напиши в следующем сообщении, что хочешь получить, а что нет');
     });
 
     bot.use(privateChatMiddleware).command('takerecipient',async (ctx: SessionContext) => {
@@ -113,7 +118,12 @@ connect(DATABASE_URL).then((client) => {
 
             if (currentUser && wishText) {
                 await currentUser.updateOne({wishList: wishText});
-                ctx.reply('Ну пинцет! Твои пожелания будут учтены, наверное...');
+                await ctx.reply('Ну пинцет! Твои пожелания будут учтены, наверное...');
+
+                if (currentUser.santaId) {
+                    await ctx.telegram.sendMessage(currentUser.santaId, 'Твой брауни изменил список пожеланий');
+                    await ctx.telegram.sendMessage(currentUser.santaId, wishText);
+                }
             } else {
                 ctx.reply('Что-то пошло не так :(');
             }
