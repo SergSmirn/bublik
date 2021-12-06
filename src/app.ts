@@ -21,12 +21,10 @@ enum Commands {
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
 const DATABASE_URL = process.env.DATABASE_URL || 'mongodb://localhost:27017/node-mongodb-server';
-const WITH_TLS = Boolean(process.env.WITH_TLS);
 const ADMIN_USERNAMES = ['SergSmirn'];
 const bot = new Telegraf<SessionContext>(BOT_TOKEN);
-const tlsCAFile = WITH_TLS ? `${__dirname}/root/dbaas_ca_cert.crt` : undefined;
 
-connect(DATABASE_URL, {tlsCAFile}).then((client) => {
+connect(DATABASE_URL).then((client) => {
     const db = client.connection.db;
     bot.use(session(db, { sessionName: 'session', collectionName: 'sessions' }));
 
