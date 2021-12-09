@@ -17,6 +17,8 @@ export interface SessionContext extends Context {
 
 enum Commands {
     WishList,
+    SendToRecipient,
+    SendToSanta,
 }
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
@@ -67,6 +69,16 @@ connect(DATABASE_URL).then((client) => {
     bot.use(privateChatMiddleware).command('setwishlist',async (ctx: SessionContext) => {
         ctx.session.currentCommand = Commands.WishList;
         ctx.reply('Напиши в следующем сообщении, что хочешь получить, а что нет');
+    });
+
+    bot.use(privateChatMiddleware).command('sendtorecipient',async (ctx: SessionContext) => {
+        ctx.session.currentCommand = Commands.SendToRecipient;
+        ctx.reply('Напиши в следующем сообщении, что хочешь передать своей подружке');
+    });
+
+    bot.use(privateChatMiddleware).command('sendtosanta',async (ctx: SessionContext) => {
+        ctx.session.currentCommand = Commands.SendToSanta;
+        ctx.reply('Напиши в следующем сообщении, что хочешь передать своему санте');
     });
 
     bot.use(privateChatMiddleware).command('takerecipient',async (ctx: SessionContext) => {
@@ -122,6 +134,44 @@ connect(DATABASE_URL).then((client) => {
                     await ctx.telegram.sendMessage(currentUser.santaId, 'Твой брауни изменил список пожеланий');
                     await ctx.telegram.sendMessage(currentUser.santaId, wishText);
                 }
+            } else {
+                ctx.reply('Что-то пошло не так :(');
+            }
+
+            ctx.session.currentCommand = null;
+        }
+
+        if (currentCommand === Commands.SendToRecipient) {
+            // @ts-ignore
+            const messageText: string | undefined = ctx.message.text;
+            const currentUser = await UserModel.findOne({id: chatInfo.id});
+
+            if (currentUser && messageText) {
+                if (currentUser.recipientId) {
+                    await ctx.telegram.sendMessage(currentUser.recipientId, 'Твой санта хочет тебе что-то сказать');
+                    await ctx.telegram.sendMessage(currentUser.recipientId, messageText);
+                }
+
+                await ctx.reply('Передал твоё сообщение');
+            } else {
+                ctx.reply('Что-то пошло не так :(');
+            }
+
+            ctx.session.currentCommand = null;
+        }
+
+        if (currentCommand === Commands.SendToSanta) {
+            // @ts-ignore
+            const messageText: string | undefined = ctx.message.text;
+            const currentUser = await UserModel.findOne({id: chatInfo.id});
+
+            if (currentUser && messageText) {
+                if (currentUser.santaId) {
+                    await ctx.telegram.sendMessage(currentUser.santaId, 'Твой брауни хочет тебе что-то сказать');
+                    await ctx.telegram.sendMessage(currentUser.santaId, messageText);
+                }
+
+                await ctx.reply('Передал твоё сообщение');
             } else {
                 ctx.reply('Что-то пошло не так :(');
             }
