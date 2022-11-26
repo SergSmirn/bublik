@@ -160,10 +160,6 @@ connect(DATABASE_URL).then((client) => {
         await ctx.replyWithPhoto({source: 'images/kiril.jpg'});
     });
 
-    bot.hears(/кот/gi, async (ctx: ISessionContext) => {
-        await ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
-    });
-
     bot.on('text', async (ctx: ISessionContext) => {
         // @ts-ignore
         const messageText: string | undefined = ctx.message.text;
