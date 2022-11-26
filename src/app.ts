@@ -234,10 +234,6 @@ connect(DATABASE_URL).then((client) => {
             await ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
         }
 
-        if (messageText && /кот/gi.test(messageText)) {
-            return ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
-        }
-
         const lastStickerDate = ctx.session.lastStickerDate && new Date(ctx.session.lastStickerDate);
         const nowDate = new Date();
 
@@ -251,6 +247,10 @@ connect(DATABASE_URL).then((client) => {
                 GACHI_STICKERS_ID[getRandomInRange(GACHI_STICKERS_ID.length - 1)],
                 {reply_to_message_id: ctx.message?.message_id},
             );
+        }
+
+        if (messageText && /кот/gi.test(messageText)) {
+            return ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
         }
     });
 
