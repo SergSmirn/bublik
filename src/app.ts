@@ -21,9 +21,9 @@ export interface ISessionContext extends Context {
 }
 
 enum Commands {
-    WishList,
-    SendToRecipient,
-    SendToSanta,
+    WishList = 'wishList',
+    SendToRecipient = 'sendToRecipient',
+    SendToSanta = 'sendToSanta',
 }
 
 const BOT_TOKEN = process.env.BOT_TOKEN || '';
