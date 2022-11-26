@@ -4,6 +4,41 @@
         "tslint:recommended"
     ],
     "jsRules": {},
-    "rules": {},
-    "rulesDirectory": []
+    "rules": {
+        "variable-name": [
+            true,
+            "allow-leading-underscore"
+        ],
+        "quotemark": [
+            true,
+            "single"
+        ],
+        "ordered-imports": [
+            true,
+            {
+                "named-imports-order": "case-insensitive",
+                "grouped-imports": true,
+                "groups": [
+                    {
+                        "match": "^[.][.]",
+                        "order": 80
+                    },
+                    {
+                        "match": "^[.]",
+                        "order": 90
+                    },
+                    {
+                        "match": ".*",
+                        "order": 15
+                    }
+                ]
+            }
+        ]
+    },
+    "rulesDirectory": [],
+    "linterOptions": {
+        "exclude": [
+            "dist"
+        ]
+    }
 }
