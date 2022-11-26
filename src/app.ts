@@ -78,8 +78,8 @@ connect(DATABASE_URL).then((client) => {
                 return (
                     `${index + 1}.` +
                     getUserDisplayName(user) +
-                    user.wishList ? ' 📃' : '' +
-                    user.recipientId ? ' 🎅' : ''
+                    (user.wishList ? ' 📃' : '') +
+                    (user.recipientId ? ' 🎅' : '')
                 );
             })
             .join('\n');
