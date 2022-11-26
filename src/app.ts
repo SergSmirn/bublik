@@ -165,22 +165,24 @@ connect(DATABASE_URL).then((client) => {
     });
 
     bot.on('text', async (ctx: ISessionContext) => {
+        // @ts-ignore
+        const messageText: string | undefined = ctx.message.text;
+
         if (ctx?.chat?.type === 'private') {
             const chatInfo = ctx.chat as PrivateChat;
             const currentCommand = ctx.session.currentCommand;
 
             if (currentCommand === Commands.WishList) {
                 // @ts-ignore
-                const wishText: string | undefined = ctx.message.text;
                 const currentUser = await UserModel.findOne({id: chatInfo.id});
 
-                if (currentUser && wishText) {
-                    await currentUser.updateOne({wishList: wishText});
+                if (currentUser && messageText) {
+                    await currentUser.updateOne({wishList: messageText});
                     await ctx.reply('Ну пинцет! Твои пожелания будут учтены, наверное...');
 
                     if (currentUser.santaId) {
                         await ctx.telegram.sendMessage(currentUser.santaId, 'Твой брауни изменил список пожеланий');
-                        await ctx.telegram.sendMessage(currentUser.santaId, wishText);
+                        await ctx.telegram.sendMessage(currentUser.santaId, messageText);
                     }
                 } else {
                     await ctx.reply('Что-то пошло не так :(');
@@ -192,8 +194,6 @@ connect(DATABASE_URL).then((client) => {
             }
 
             if (currentCommand === Commands.SendToRecipient) {
-                // @ts-ignore
-                const messageText: string | undefined = ctx.message.text;
                 const currentUser = await UserModel.findOne({id: chatInfo.id});
 
                 if (currentUser && messageText) {
@@ -213,8 +213,6 @@ connect(DATABASE_URL).then((client) => {
             }
 
             if (currentCommand === Commands.SendToSanta) {
-                // @ts-ignore
-                const messageText: string | undefined = ctx.message.text;
                 const currentUser = await UserModel.findOne({id: chatInfo.id});
 
                 if (currentUser && messageText) {
@@ -234,6 +232,10 @@ connect(DATABASE_URL).then((client) => {
             }
 
             await ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
+        }
+
+        if (messageText && /кот/gi.test(messageText)) {
+            return ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
         }
 
         const lastStickerDate = ctx.session.lastStickerDate && new Date(ctx.session.lastStickerDate);
