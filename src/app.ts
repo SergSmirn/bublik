@@ -75,10 +75,12 @@ connect(DATABASE_URL).then((client) => {
         const users = await UserModel.find();
         const text = 'Участники:\n' + users
             .map((user: UserSchema, index) => {
-                return `${index + 1}.` +
-                getUserDisplayName(user) +
-                user.wishList ? ' 📃' : '' +
-                user.recipientId ? ' 🎅' : '';
+                return (
+                    `${index + 1}.` +
+                    getUserDisplayName(user) +
+                    user.wishList ? ' 📃' : '' +
+                    user.recipientId ? ' 🎅' : ''
+                );
             })
             .join('\n');
         await ctx.reply(text);
