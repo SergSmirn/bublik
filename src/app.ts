@@ -15,7 +15,7 @@ dotenv.config();
 
 export interface ISessionContext extends Context {
     session: {
-        currentCommand?: Commands;
+        currentCommand?: Commands | null;
         lastStickerDate?: string;
     };
 }
@@ -59,7 +59,7 @@ connect(DATABASE_URL).then((client) => {
                 await notifyAll(ctx, newUser);
             }
         }
-        ctx.session.currentCommand = undefined;
+        ctx.session.currentCommand = null;
 
         await ctx.reply('Хай, брауни 🤙');
         await ctx.reply('Используй команду /getmembers, чтобы посмотреть всех участников игры');
@@ -186,7 +186,7 @@ connect(DATABASE_URL).then((client) => {
                     await ctx.reply('Что-то пошло не так :(');
                 }
 
-                ctx.session.currentCommand = undefined;
+                ctx.session.currentCommand = null;
 
                 return;
             }
@@ -207,7 +207,7 @@ connect(DATABASE_URL).then((client) => {
                     await ctx.reply('Что-то пошло не так :(');
                 }
 
-                ctx.session.currentCommand = undefined;
+                ctx.session.currentCommand = null;
 
                 return;
             }
@@ -228,7 +228,7 @@ connect(DATABASE_URL).then((client) => {
                     await ctx.reply('Что-то пошло не так :(');
                 }
 
-                ctx.session.currentCommand = undefined;
+                ctx.session.currentCommand = null;
 
                 return;
             }
