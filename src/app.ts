@@ -227,7 +227,7 @@ connect(DATABASE_URL).then((client) => {
                 return;
             }
 
-            await ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
+            await ctx.replyWithPhoto(`https://genrandom.com/api/cat?${new Date().getTime()}`);
         }
 
         const lastStickerDate = ctx.session.lastStickerDate && new Date(ctx.session.lastStickerDate);
@@ -246,7 +246,7 @@ connect(DATABASE_URL).then((client) => {
         }
 
         if (messageText && /кот/gi.test(messageText)) {
-            return ctx.replyWithPhoto(`https://thiscatdoesnotexist.com/?${new Date().getTime()}`);
+            return ctx.replyWithPhoto(`https://genrandom.com/api/cat?${new Date().getTime()}`);
         }
     });
 
